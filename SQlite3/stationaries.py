@@ -1,6 +1,6 @@
 import sqlite3
 #create a connection
-conn = sqlite3.connect('items.db')
+conn = sqlite3.connect('goods.db')
 #create a cursor object
 c = conn.cursor()
 #check
@@ -19,7 +19,7 @@ print( 'All successful')
 # )
 
 #check
-#print('table has been created successfully')
+print('table has been created successfully')
 
 stationary_list= [
     ("123", "pencil", "1.50", "22"),
@@ -39,17 +39,15 @@ stationary_list= [
     ("0407", "Clip", "1.10", "37")
 ]
 
-c.executemany( 
-    """ 
-    INSERT INTO stationary
-    VALUES (?, ?, ?, ?) 
-    """, 
-    stationary_list 
-)
+c.executemany( """ INSERT INTO stationary VALUES (?, ?, ?, ?) """, stationary_list )
 
-query = """
- SELECT 
-    item_id, name, cost_price, quant_in_stock,
+# Querying the database
+c.execute("SELECT * FROM stationary")
+
+#QUERY
+query =""" 
+SELECT 
+    item_id, name, cost_price,
 CASE
     WHEN quant_in_stock < 10 THEN 'Restock'
     WHEN quant_in_stock > 10 THEN 'Do Not Restock'
@@ -58,10 +56,9 @@ END
 FROM stationary
 ORDER BY cost_price DESC;
 """
-
 c.execute(query)
 items= c.fetchall()
-print(f" {'-' * 50}\nitem_id\t name\t cost price\tquant_in_stock\n{'-' * 50}")
-results=''.join(','.join(str(tup) for tup in items))
-print(results)
-
+print(f" {'-' * 70}\nitem_id\t name\t\t cost price\tquant_in_stock\n{'-' * 70}")
+for item in items:
+     item_id, name, cost_price, quant_in_stock = item
+     print(f"{item_id}\t{name}\t{cost_price}\t{quant_in_stock}")
